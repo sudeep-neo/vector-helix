@@ -7,11 +7,14 @@ Cloudflare D1 database. Everything below runs on Cloudflare's free tier.
 ## What's in this folder
 
 ```
-index.html                 # the site (contact form posts to /api/contact)
+public/index.html          # the site (served publicly; contact form posts to /api/contact)
 functions/api/contact.js   # Pages Function — validates + inserts into D1
 schema.sql                 # D1 table definition
-wrangler.toml              # project + D1 binding config
+wrangler.toml              # project + D1 binding config (pages_build_output_dir = public)
 ```
+
+Only `public/` is served as the website; config, schema, and docs stay at the
+project root and are never exposed publicly.
 
 ---
 
@@ -83,7 +86,7 @@ Pick **one** of the two paths.
 3. Select the repo. Build settings:
    - **Framework preset:** None
    - **Build command:** *(leave empty)*
-   - **Build output directory:** `/`
+   - **Build output directory:** `public`
 4. **Settings → Functions → D1 database bindings → Add binding:**
    - Variable name: `DB`
    - D1 database: `vectorhelix-contacts`

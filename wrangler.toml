@@ -1,6 +1,6 @@
 name = "vector-helix"
 compatibility_date = "2024-09-01"
-pages_build_output_dir = "."
+pages_build_output_dir = "public"
 
 # D1 binding. The Function reads it as `env.DB`.
 # After you create the database (see DEPLOY.md), paste its id below.
@@ -9,4 +9,4 @@ pages_build_output_dir = "."
 [[d1_databases]]
 binding = "DB"
 database_name = "vectorhelix-contacts"
-database_id = "REPLACE_WITH_YOUR_DATABASE_ID"
+database_id = "1471f41a-c983-42fb-b263-ae3ab7548958"
