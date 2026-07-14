@@ -1,0 +1,12 @@
+name = "vector-helix"
+compatibility_date = "2024-09-01"
+pages_build_output_dir = "."
+
+# D1 binding. The Function reads it as `env.DB`.
+# After you create the database (see DEPLOY.md), paste its id below.
+# For production you can EITHER keep this file OR bind D1 in the
+# Pages dashboard (Settings → Functions → D1 bindings) — do one, not both.
+[[d1_databases]]
+binding = "DB"
+database_name = "vectorhelix-contacts"
+database_id = "REPLACE_WITH_YOUR_DATABASE_ID"

@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vectorhelix — The AI Operating System for Enterprises</title>
+<meta name="description" content="Vectorhelix is the orchestration layer between your enterprise and every AI model. Your data, your context graph, your learning loop — deployed in weeks, not months.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#16181d;
+    --ink-soft:#4b4f58;
+    --ink-faint:#8b8f99;
+    --paper:#fbfaf7;
+    --paper-alt:#f3f1ec;
+    --line:#e4e1d9;
+    --accent:#1d4ed8;
+    --accent-ink:#173db0;
+    --accent-lift:#3b82f6;
+
+    /* deep dark palette (not a reuse of --ink) */
+    --ink-deep:#0b0c10;
+    --ink-deep-2:#101218;
+    --dark-line:rgba(255,255,255,.10);
+    --dark-soft:#b9bcc4;
+    --dark-faint:#7f838f;
+
+    --serif:'Newsreader', Georgia, serif;
+    --sans:'Inter', -apple-system, sans-serif;
+    --mono:'IBM Plex Mono', monospace;
+
+    --grad:linear-gradient(100deg,#3b82f6,#6366f1 55%,#2563eb);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+  ::selection{background:var(--accent);color:#fff;}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 32px;position:relative;}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:20px;}
+  h1,h2,h3{font-family:var(--serif);font-weight:400;letter-spacing:-.01em;}
+  a{color:inherit;}
+  .grad-text{background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+
+  /* SCROLL PROGRESS */
+  .progress{position:fixed;top:0;left:0;height:2px;width:0;background:var(--grad);z-index:60;transition:width .1s linear;}
+
+  /* NAV — dark over the hero, flips to light glass once past it */
+  nav{position:sticky;top:0;z-index:50;background:var(--ink-deep);border-bottom:1px solid transparent;transition:height .25s ease,background .25s ease,border-color .25s ease,box-shadow .25s ease;}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:76px;transition:height .25s ease;}
+  nav.shrink{background:rgba(251,250,247,.9);backdrop-filter:blur(12px);border-color:var(--line);box-shadow:0 1px 24px rgba(20,24,29,.05);}
+  nav.shrink .nav-inner{height:60px;}
+  .logo{font-family:var(--mono);font-weight:500;font-size:17px;text-decoration:none;letter-spacing:-.02em;color:#fff;transition:color .25s ease;}
+  .logo span{background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+  .nav-links{display:flex;gap:32px;align-items:center;}
+  .nav-links a{text-decoration:none;font-size:14px;color:rgba(255,255,255,.72);transition:color .15s;}
+  .nav-links a:hover{color:#fff;}
+  /* when scrolled onto light sections, flip nav text dark */
+  nav.shrink .logo{color:var(--ink);}
+  nav.shrink .nav-links a{color:var(--ink-soft);}
+  nav.shrink .nav-links a:hover{color:var(--ink);}
+  .btn{position:relative;display:inline-flex;align-items:center;gap:8px;background:var(--grad);color:#fff;text-decoration:none;font-size:14px;font-weight:500;padding:11px 22px;border-radius:8px;transition:transform .18s ease,filter .2s ease,box-shadow .2s ease;overflow:hidden;}
+  .btn::after{content:"";position:absolute;top:0;left:-120%;width:60%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.28),transparent);transform:skewX(-18deg);transition:left .55s ease;}
+  .btn:hover{filter:brightness(1.08);transform:translateY(-2px);box-shadow:0 10px 26px rgba(59,130,246,.35);}
+  .btn:hover::after{left:130%;}
+  .btn:active{transform:translateY(0) scale(.98);}
+  .btn .arrow{display:inline-block;transition:transform .2s ease;}
+  .btn:hover .arrow{transform:translateX(4px);}
+  .btn.ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.28);}
+  .btn.ghost:hover{border-color:rgba(255,255,255,.7);background:rgba(255,255,255,.06);filter:none;box-shadow:none;}
+  @media(max-width:760px){.nav-links a:not(.btn){display:none;}}
+
+  /* HERO — full-viewport dark opener */
+  .hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:96px 0 88px;position:relative;overflow:hidden;background:var(--ink-deep);color:#eef0f4;}
+  .hero::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 55% at 18% 8%,rgba(59,130,246,.16),transparent 60%);pointer-events:none;z-index:0;}
+  .hero-glow{position:absolute;top:-160px;left:-120px;width:640px;height:640px;background:radial-gradient(circle,rgba(59,130,246,.18),transparent 62%);pointer-events:none;z-index:0;}
+  .hero .wrap{z-index:2;}
+  .hero .eyebrow{color:#8fb0ff;}
+  .hero h1{font-size:clamp(46px,6.6vw,82px);line-height:1.03;max-width:900px;margin-bottom:28px;color:#fff;}
+  .hero h1 em{font-style:italic;position:relative;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+  .hero p.sub{font-size:19px;color:var(--dark-soft);max-width:640px;margin-bottom:38px;}
+  .hero-ctas{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:52px;}
+  .proofstrip{display:flex;flex-wrap:wrap;gap:0;border-top:1px solid var(--dark-line);}
+  .proofstrip div{font-family:var(--mono);font-size:12.5px;color:var(--dark-faint);padding:20px 34px 0 0;letter-spacing:.02em;}
+  .proofstrip strong{display:block;font-family:var(--serif);font-size:30px;font-weight:400;color:#fff;letter-spacing:-.01em;line-height:1.1;margin-bottom:4px;}
+  .hero-bg{position:absolute;right:-120px;top:120px;width:600px;height:600px;opacity:.7;pointer-events:none;z-index:1;transform-origin:center;animation:drift 46s linear infinite;}
+  .hero-bg .spin{transform-origin:360px 280px;animation:spin 60s linear infinite;}
+  @keyframes drift{0%{transform:translateY(0)}50%{transform:translateY(-22px)}100%{transform:translateY(0)}}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @media(max-width:980px){.hero-bg{display:none;}}
+
+  .scroll-cue{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:var(--dark-faint);text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:8px;z-index:2;}
+  .scroll-cue span{width:1px;height:34px;background:linear-gradient(var(--dark-faint),transparent);animation:cue 1.8s ease-in-out infinite;}
+  @keyframes cue{0%,100%{opacity:.3;transform:scaleY(.6)}50%{opacity:1;transform:scaleY(1)}}
+
+  /* SECTIONS */
+  section{padding:130px 0;position:relative;}
+  .divider{height:1px;background:var(--line);transform:scaleX(0);transform-origin:left;transition:transform 1s ease;}
+  .divider.on{transform:scaleX(1);}
+
+  /* watermark numeral behind headlines */
+  .watermark{position:absolute;top:60px;right:32px;font-family:var(--serif);font-size:clamp(120px,20vw,240px);line-height:1;color:var(--ink);opacity:.035;pointer-events:none;z-index:0;font-style:italic;}
+
+  /* DARK SECTION SYSTEM */
+  .dark{background:var(--ink-deep);color:#eef0f4;position:relative;overflow:hidden;}
+  .dark::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 60% at 20% 0%,rgba(59,130,246,.14),transparent 60%);pointer-events:none;}
+  .dark .wrap{z-index:2;}
+  .dark .eyebrow{color:#8fb0ff;}
+  .dark h2,.dark h3{color:#fff;}
+  .dark .sec-head p.lead,.dark p{color:var(--dark-soft);}
+  .dark .watermark{color:#fff;opacity:.05;}
+
+  .sec-head h2{font-size:clamp(32px,4.4vw,50px);line-height:1.1;max-width:800px;margin-bottom:24px;}
+  .sec-head p.lead{font-size:18px;color:var(--ink-soft);max-width:660px;}
+
+  /* PROBLEM */
+  .problem-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:72px;align-items:start;}
+  @media(max-width:860px){.problem-grid{grid-template-columns:1fr;gap:40px;}}
+  .problem-grid p{color:var(--ink-soft);margin-bottom:20px;}
+  .pull{border-left:2px solid transparent;border-image:var(--grad) 1;padding:6px 0 6px 28px;font-family:var(--serif);font-size:24px;line-height:1.45;font-style:italic;color:var(--ink);}
+  .pull small{display:block;font-family:var(--mono);font-style:normal;font-size:12px;color:var(--ink-faint);margin-top:16px;letter-spacing:.08em;}
+
+  /* PILLARS (now on dark) */
+  .pillars{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:60px;}
+  .pillar{position:relative;background:var(--ink-deep-2);border:1px solid var(--dark-line);border-radius:14px;padding:38px 34px;overflow:hidden;transition:transform .3s ease,border-color .3s ease,box-shadow .3s ease;}
+  .pillar::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad);transform:scaleX(0);transform-origin:left;transition:transform .4s ease;}
+  .pillar:hover{transform:translateY(-6px);border-color:rgba(99,130,246,.5);box-shadow:0 24px 60px rgba(0,0,0,.45),0 0 0 1px rgba(99,130,246,.15);}
+  .pillar:hover::before{transform:scaleX(1);}
+  .pillar.wide{grid-column:1/-1;background:linear-gradient(120deg,#101322,#0b0c10);}
+  .pillar .num{font-family:var(--mono);font-size:12px;letter-spacing:.1em;background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+  .pillar h3{font-size:26px;margin:14px 0 12px;color:#fff;}
+  .pillar p{font-size:15.5px;color:var(--dark-soft);}
+  .pillar.wide .helix-mini{position:absolute;right:24px;top:50%;transform:translateY(-50%);opacity:.5;}
+  @media(max-width:760px){.pillars{grid-template-columns:1fr;}.pillar.wide .helix-mini{display:none;}}
+
+  /* APPROACH */
+  .steps{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:44px;margin-top:64px;}
+  .steps .track{position:absolute;top:0;left:0;height:2px;width:100%;background:var(--line);}
+  .steps .track i{position:absolute;inset:0;width:0;background:var(--grad);transition:width 1.2s ease;}
+  .steps.on .track i{width:100%;}
+  @media(max-width:820px){.steps{grid-template-columns:1fr;}.steps .track{display:none;}}
+  .step{padding-top:26px;}
+  .step .dot{position:absolute;top:-5px;width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 5px var(--paper);}
+  .step .phase{font-family:var(--mono);font-size:12px;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;}
+  .step h3{font-size:24px;margin:12px 0 10px;}
+  .step p{font-size:15.5px;color:var(--ink-soft);}
+  .punchline{margin-top:72px;font-family:var(--serif);font-size:clamp(24px,3vw,36px);font-style:italic;text-align:center;}
+  .punchline span{background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+
+  /* PROOF */
+  .case{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:start;margin-top:8px;}
+  @media(max-width:860px){.case{grid-template-columns:1fr;gap:40px;}}
+  .case p{color:var(--ink-soft);margin-bottom:18px;}
+  .outcomes{list-style:none;}
+  .outcomes li{border-bottom:1px solid var(--line);padding:18px 0;font-size:16px;display:flex;gap:16px;align-items:baseline;opacity:0;transform:translateX(14px);transition:opacity .5s ease,transform .5s ease;}
+  .outcomes.on li{opacity:1;transform:none;}
+  .outcomes li:first-child{border-top:1px solid var(--line);}
+  .outcomes .tick{font-family:var(--mono);color:var(--accent);font-size:13px;}
+
+  /* MANIFESTO (dark) */
+  .manifesto h2{font-size:clamp(32px,4.4vw,50px);max-width:720px;margin-bottom:32px;line-height:1.15;}
+  .manifesto p{max-width:660px;margin-bottom:20px;font-size:17.5px;}
+  .manifesto p strong{color:#fff;font-weight:500;}
+
+  /* CTA (dark) */
+  .cta{text-align:center;padding:150px 0;}
+  .cta .glow{position:absolute;top:0;left:50%;transform:translateX(-50%);width:720px;height:420px;background:radial-gradient(circle,rgba(59,130,246,.22),transparent 62%);pointer-events:none;}
+  .cta h2{font-size:clamp(34px,5vw,58px);margin-bottom:20px;color:#fff;line-height:1.08;}
+  .cta p{color:var(--dark-soft);max-width:540px;margin:0 auto 38px;}
+  .cta .btn{background:var(--grad);font-size:16px;padding:16px 36px;}
+  .cta .btn:hover{box-shadow:0 16px 44px rgba(59,130,246,.45);}
+  .cta .email{display:block;margin-top:24px;font-family:var(--mono);font-size:14px;color:var(--dark-faint);}
+  .cta .email a{color:#8fb0ff;text-decoration:none;}
+
+  /* CONTACT FORM */
+  .contact-form{max-width:560px;margin:44px auto 0;text-align:left;}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  @media(max-width:560px){.field-row{grid-template-columns:1fr;}}
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--dark-faint);margin-bottom:8px;}
+  .field label span{text-transform:none;letter-spacing:0;color:var(--dark-faint);}
+  .field input,.field textarea{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--dark-line);border-radius:10px;padding:13px 15px;color:#fff;font-family:var(--sans);font-size:15px;transition:border-color .2s ease,background .2s ease,box-shadow .2s ease;}
+  .field input:focus,.field textarea:focus{outline:none;border-color:rgba(99,130,246,.7);background:rgba(255,255,255,.06);box-shadow:0 0 0 3px rgba(59,130,246,.15);}
+  .field textarea{resize:vertical;min-height:112px;}
+  .field input::placeholder,.field textarea::placeholder{color:var(--dark-faint);}
+  .hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0;pointer-events:none;}
+  .form-actions{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:8px;}
+  .contact-form .btn{background:var(--grad);border:none;cursor:pointer;font-family:var(--sans);font-size:16px;padding:16px 34px;}
+  .contact-form .btn:disabled{opacity:.6;cursor:default;}
+  .form-status{font-size:14px;color:var(--dark-soft);min-height:1em;}
+  .form-status.error{color:#ff9a9a;}
+  .form-status.success{color:#7ee0a8;}
+
+  /* FOOTER */
+  footer{border-top:1px solid var(--dark-line);padding:36px 0;background:var(--ink-deep);color:var(--dark-faint);}
+  .foot{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;font-size:13px;}
+  .foot a{text-decoration:none;color:var(--dark-faint);margin-left:22px;transition:color .15s;}
+  .foot a:hover{color:#fff;}
+  .foot .logo-f{font-family:var(--mono);color:#fff;}
+
+  /* REVEAL SYSTEM */
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s cubic-bezier(.22,.61,.36,1),transform .7s cubic-bezier(.22,.61,.36,1);transition-delay:var(--d,0ms);}
+  .reveal-left{opacity:0;transform:translateX(-28px);}
+  .reveal-right{opacity:0;transform:translateX(28px);}
+  .reveal-scale{opacity:0;transform:scale(.94) translateY(16px);}
+  .reveal.on,.reveal-left.on,.reveal-right.on,.reveal-scale.on{opacity:1;transform:none;}
+
+  @media(prefers-reduced-motion:reduce){
+    *{animation:none!important;}
+    .reveal,.reveal-left,.reveal-right,.reveal-scale,.outcomes li{opacity:1!important;transform:none!important;}
+    .divider,.steps .track i{transform:none!important;width:100%!important;}
+    html{scroll-behavior:auto;}
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<nav id="nav">
+  <div class="wrap nav-inner">
+    <a class="logo" href="#">vector<span>helix</span></a>
+    <div class="nav-links">
+      <a href="#platform">Platform</a>
+      <a href="#approach">Approach</a>
+      <a href="#proof">Proof</a>
+      <a href="#manifesto">Manifesto</a>
+      <a class="btn" href="#contact">Book a working session <span class="arrow">→</span></a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-glow"></div>
+  <svg class="hero-bg" id="heroBg" viewBox="0 0 560 560" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g class="spin">
+    <g stroke="#3b82f6" stroke-opacity=".28" stroke-width="1.5">
+      <path d="M180 540 C 300 480, 300 420, 180 360 C 60 300, 60 240, 180 180 C 300 120, 300 60, 180 0" transform="translate(100,0)"/>
+      <path d="M340 540 C 220 480, 220 420, 340 360 C 460 300, 460 240, 340 180 C 220 120, 220 60, 340 0" transform="translate(100,0)"/>
+    </g>
+    <g stroke="#6366f1" stroke-opacity=".16">
+      <line x1="310" y1="500" x2="410" y2="500"/><line x1="290" y1="440" x2="430" y2="440"/>
+      <line x1="310" y1="320" x2="410" y2="320"/><line x1="290" y1="260" x2="430" y2="260"/>
+      <line x1="310" y1="140" x2="410" y2="140"/><line x1="290" y1="80" x2="430" y2="80"/>
+    </g>
+    <g fill="#3b82f6">
+      <circle cx="310" cy="500" r="4"/><circle cx="410" cy="500" r="3"/>
+      <circle cx="430" cy="260" r="4"/><circle cx="290" cy="260" r="3"/>
+      <circle cx="310" cy="140" r="4"/><circle cx="410" cy="80" r="4"/>
+      <circle cx="360" cy="360" r="5"/>
+    </g>
+    </g>
+  </svg>
+  <div class="wrap">
+    <div class="eyebrow reveal">The AI Operating System for Enterprises</div>
+    <h1 class="reveal" style="--d:80ms">Your models will change.<br>Your <em>intelligence</em> shouldn't.</h1>
+    <p class="sub reveal" style="--d:160ms">Vectorhelix is the orchestration layer that sits between your enterprise and every AI model — so your data, your context graph, and your learning loop stay yours. Deployed inside your tenant, in weeks, not months.</p>
+    <div class="hero-ctas reveal" style="--d:240ms">
+      <a class="btn" href="#contact">Book a working session <span class="arrow">→</span></a>
+      <a class="btn ghost" href="#manifesto">Read the manifesto</a>
+    </div>
+    <div class="proofstrip reveal" style="--d:320ms">
+      <div><strong data-count="80" data-suffix="%">0%</strong>lower token costs</div>
+      <div><strong data-count="0" data-plain="0">0</strong>model lock-in</div>
+      <div><strong data-plain="Weeks">Weeks</strong>to production</div>
+      <div><strong data-plain="Yours">Yours</strong>data &amp; learning</div>
+    </div>
+  </div>
+  <div class="scroll-cue">Scroll<span></span></div>
+</header>
+
+<section id="problem">
+  <div class="watermark">01</div>
+  <div class="wrap">
+    <div class="eyebrow reveal">The Reverse Information Paradox</div>
+    <div class="problem-grid">
+      <div class="sec-head reveal-left">
+        <h2>In the cloud era, enterprises accumulated data. In the AI era, they accumulate learning.</h2>
+        <p style="color:var(--ink-soft);margin-top:24px;">Every prompt, trace, correction, and decision your teams make is training someone's model — usually not yours. Rent intelligence from a single vendor and you compound <em>their</em> advantage with <em>your</em> knowledge.</p>
+        <p style="color:var(--ink-soft);margin-top:18px;">You should be able to use any model without giving up the knowledge that makes you unique. That's what we build.</p>
+      </div>
+      <div class="pull reveal-right" style="--d:120ms">
+        If the model you depend on disappeared tomorrow, would your AI capability go with it?
+        <small>THE QUESTION EVERY ENTERPRISE SHOULD ASK</small>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap"><div class="divider"></div></div>
+
+<section class="dark" id="platform">
+  <div class="watermark">02</div>
+  <div class="wrap">
+    <div class="eyebrow reveal">The Platform</div>
+    <div class="sec-head reveal">
+      <h2>Own the loop, not just the license.</h2>
+      <p class="lead">Five capabilities, one system — deployed inside your trust boundary.</p>
+    </div>
+    <div class="pillars">
+      <div class="pillar reveal-scale">
+        <div class="num">01 / CONTROL</div>
+        <h3>Your data remains yours</h3>
+        <p>Your private evals define what "good" looks like for your business. Memory, traces, feedback, and decisions stay inside your boundary — and you keep the right to learn from your own outputs.</p>
+      </div>
+      <div class="pillar reveal-scale" style="--d:90ms">
+        <div class="num">02 / CONTEXT</div>
+        <h3>A context graph for your business</h3>
+        <p>The living map of your workflows, entities, and institutional knowledge that makes any model dramatically better at <em>your</em> problems — built within your tenant, owned by you.</p>
+      </div>
+      <div class="pillar reveal-scale" style="--d:180ms">
+        <div class="num">03 / CHOICE</div>
+        <h3>No lock-in to any one model</h3>
+        <p>The orchestration layer is decoupled from every model. Swap frontier for open weights — your evals, routing, and context graph don't change. No vendor can hold your capability hostage.</p>
+      </div>
+      <div class="pillar reveal-scale" style="--d:270ms">
+        <div class="num">04 / COST</div>
+        <h3>Cut token spend by up to 80%</h3>
+        <p>Intelligent routing matches each task to the cheapest model that clears your quality bar. Frontier models where they matter, small models where they don't.</p>
+      </div>
+      <div class="pillar wide reveal">
+        <svg class="helix-mini" width="90" height="150" viewBox="0 0 90 150" fill="none">
+          <g stroke="#6366f1" stroke-opacity=".8" stroke-width="1.5">
+            <path d="M20 150 C 70 120, 70 90, 20 75 C -30 60, -30 30, 20 0" transform="translate(25,0)"/>
+            <path d="M70 150 C 20 120, 20 90, 70 75 C 120 60, 120 30, 70 0" transform="translate(-5,0)"/>
+          </g>
+        </svg>
+        <div class="num">05 / COMPOUND</div>
+        <h3>Not a loop that repeats — a helix that climbs</h3>
+        <p>Control + Context + Choice + Cost closes the loop, then lifts it: every task your teams run returns the system to the same place, one turn higher. The compounding accrues to your firm, not your vendor.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="approach">
+  <div class="watermark">03</div>
+  <div class="wrap">
+    <div class="eyebrow reveal">The Approach</div>
+    <div class="sec-head reveal">
+      <h2>A platform, delivered by people who ship.</h2>
+      <p class="lead">We don't hand you a license and a manual. Vectorhelix engineers embed with your team and stand the system up inside your tenant.</p>
+    </div>
+    <div class="steps" id="steps">
+      <div class="track"><i></i></div>
+      <div class="step reveal">
+        <div class="dot"></div>
+        <div class="phase">Weeks 1–2</div>
+        <h3>Map</h3>
+        <p>We sit with your operators, map the workflows that matter, and stand up the context graph inside your boundary.</p>
+      </div>
+      <div class="step reveal" style="--d:140ms">
+        <div class="dot"></div>
+        <div class="phase">Weeks 3–5</div>
+        <h3>Wire</h3>
+        <p>Private evals, model routing, and your first production workflows go live — measured against your definition of good, not a demo script.</p>
+      </div>
+      <div class="step reveal" style="--d:280ms">
+        <div class="dot"></div>
+        <div class="phase">Week 6+</div>
+        <h3>Compound</h3>
+        <p>Your team takes the keys. Every trace and correction feeds the learning loop. We stay on as the system climbs.</p>
+      </div>
+    </div>
+    <div class="punchline reveal">Weeks, not months. <span>Capability, not dependency.</span></div>
+  </div>
+</section>
+
+<div class="wrap"><div class="divider"></div></div>
+
+<section id="proof">
+  <div class="watermark">04</div>
+  <div class="wrap">
+    <div class="eyebrow reveal">In Production</div>
+    <div class="sec-head reveal"><h2>First deployment. Real workflows.</h2></div>
+    <div class="case">
+      <div class="reveal-left">
+        <p>For an advisory firm operating across real estate, infrastructure, and maritime, Vectorhelix is the intelligence layer behind their client-facing platform — document analysis, deep research, and decision support across thousands of contracts, tenders, and reports.</p>
+        <p>Deployed inside their tenant. Routed across multiple models. Owned by them.</p>
+      </div>
+      <ul class="outcomes reveal-right">
+        <li><span class="tick">→</span>Live in under six weeks, inside their trust boundary</li>
+        <li><span class="tick">→</span>Multi-model routing from day one — no single-vendor dependency</li>
+        <li><span class="tick">→</span>Analysis that took analysts days now takes minutes</li>
+        <li><span class="tick">→</span>Every engagement makes the context graph sharper</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="dark manifesto" id="manifesto">
+  <div class="watermark">05</div>
+  <div class="wrap">
+    <div class="eyebrow reveal">Why We Exist</div>
+    <h2 class="reveal">The trust boundary must evolve.</h2>
+    <p class="reveal">Protecting information was the cloud era's problem. The AI era's problem is protecting the mechanisms by which your organization learns, adapts, and compounds intelligence.</p>
+    <p class="reveal" style="--d:100ms"><strong>Models will commoditize. Context won't.</strong> The enterprises that win the next decade are the ones that own their evals, their memory, and their learning loop — and treat every model as a replaceable part.</p>
+    <p class="reveal" style="--d:200ms">Most AI systems run in circles — a loop that returns to where it started. Yours should be a helix: <strong>every cycle ends one turn higher.</strong> Your intelligence, encoded.</p>
+    <p class="reveal" style="--d:300ms">We started Vectorhelix to build that layer.</p>
+  </div>
+</section>
+
+<section class="dark cta" id="contact">
+  <div class="glow"></div>
+  <div class="wrap">
+    <div class="eyebrow reveal">Get Started</div>
+    <h2 class="reveal">See your first workflow running<br>in two weeks.</h2>
+    <p class="reveal" style="--d:100ms">Bring one painful workflow to a 45-minute working session. We'll show you what it looks like running on Vectorhelix.</p>
+    <form class="contact-form reveal" id="contactForm" style="--d:180ms" novalidate>
+      <div class="field-row">
+        <div class="field">
+          <label for="cf-name">Name</label>
+          <input id="cf-name" name="name" type="text" required maxlength="200" autocomplete="name" placeholder="Jane Doe">
+        </div>
+        <div class="field">
+          <label for="cf-email">Work email</label>
+          <input id="cf-email" name="email" type="email" required maxlength="200" autocomplete="email" placeholder="jane@company.com">
+        </div>
+      </div>
+      <div class="field">
+        <label for="cf-company">Company <span>(optional)</span></label>
+        <input id="cf-company" name="company" type="text" maxlength="200" autocomplete="organization" placeholder="Company Inc.">
+      </div>
+      <div class="field">
+        <label for="cf-message">What workflow should we look at?</label>
+        <textarea id="cf-message" name="message" required maxlength="5000" placeholder="Tell us about one painful workflow…"></textarea>
+      </div>
+      <!-- honeypot: real users never fill this -->
+      <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <div class="form-actions">
+        <button type="submit" class="btn" id="cf-submit">Book a working session <span class="arrow">→</span></button>
+        <span class="form-status" id="cf-status" role="status" aria-live="polite"></span>
+      </div>
+    </form>
+    <span class="email reveal" style="--d:240ms">or write to us — <a href="mailto:hello@vectorhelix.ai">hello@vectorhelix.ai</a></span>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot">
+    <div><span class="logo-f">vectorhelix</span> — The AI Operating System for Enterprises</div>
+    <div>
+      <a href="#platform">Platform</a><a href="#approach">Approach</a><a href="#proof">Proof</a><a href="#manifesto">Manifesto</a><a href="#contact">Contact</a>
+      <span style="margin-left:22px;">© 2026 Vectorhelix</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const reduce = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  /* Reveal + one-off triggers */
+  const io = new IntersectionObserver((es)=>{
+    es.forEach(e=>{
+      if(!e.isIntersecting) return;
+      const el = e.target;
+      el.classList.add('on');
+      if(el.classList.contains('proofstrip')) runCounts(el);
+      io.unobserve(el);
+    });
+  },{threshold:.15});
+  document.querySelectorAll('.reveal,.reveal-left,.reveal-right,.reveal-scale,.divider,.outcomes,.proofstrip,#steps').forEach(el=>io.observe(el));
+
+  /* Count-up for numeric stats */
+  function runCounts(scope){
+    if(reduce) return;
+    scope.querySelectorAll('[data-count]').forEach(node=>{
+      const target = +node.dataset.count;
+      const suffix = node.dataset.suffix || '';
+      const dur = 1100; const start = performance.now();
+      function tick(now){
+        const p = Math.min(1,(now-start)/dur);
+        const eased = 1-Math.pow(1-p,3);
+        node.textContent = Math.round(target*eased)+suffix;
+        if(p<1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    });
+  }
+
+  /* Nav shrink + scroll progress */
+  const nav = document.getElementById('nav');
+  const progress = document.getElementById('progress');
+  const hero = document.querySelector('.hero');
+  function onScroll(){
+    const y = window.scrollY;
+    const heroH = hero ? hero.offsetHeight : 600;
+    nav.classList.toggle('shrink', y > heroH - 90);
+    const h = document.documentElement.scrollHeight - window.innerHeight;
+    progress.style.width = (h>0 ? (y/h)*100 : 0)+'%';
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  /* Hero mouse-parallax */
+  const heroBg = document.getElementById('heroBg');
+  if(heroBg && !reduce){
+    window.addEventListener('mousemove',(e)=>{
+      const dx = (e.clientX/window.innerWidth - .5);
+      const dy = (e.clientY/window.innerHeight - .5);
+      heroBg.style.marginLeft = (dx*-30)+'px';
+      heroBg.style.marginTop = (dy*-30)+'px';
+    },{passive:true});
+  }
+
+  /* Contact form → /api/contact (Cloudflare Pages Function + D1) */
+  const form = document.getElementById('contactForm');
+  if(form){
+    const status = document.getElementById('cf-status');
+    const submit = document.getElementById('cf-submit');
+    form.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const payload = Object.fromEntries(new FormData(form));
+      // client-side sanity checks
+      if(!payload.name || !payload.email || !payload.message){
+        status.className='form-status error';
+        status.textContent='Please fill in your name, email, and message.';
+        return;
+      }
+      status.className='form-status';
+      status.textContent='Sending…';
+      submit.disabled=true;
+      try{
+        const res = await fetch('/api/contact',{
+          method:'POST',
+          headers:{'content-type':'application/json'},
+          body:JSON.stringify(payload)
+        });
+        const data = await res.json().catch(()=>({}));
+        if(res.ok && data.ok){
+          status.className='form-status success';
+          status.textContent="Thanks — we'll be in touch within one business day.";
+          form.reset();
+        }else{
+          status.className='form-status error';
+          status.textContent=data.error||'Something went wrong. Please try again.';
+          submit.disabled=false;
+        }
+      }catch(err){
+        status.className='form-status error';
+        status.textContent='Network error. Please try again, or email hello@vectorhelix.ai.';
+        submit.disabled=false;
+      }
+    });
+  }
+</script>
+</body>
+</html>
